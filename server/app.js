@@ -3,10 +3,14 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import fileUpload from "express-fileupload";
 import cors from "cors";
+import { dbConnection } from "./database/dbConnect.js";
+import userRouter from "./routes/userRoute.js"
 
 const app = express();
 
 dotenv.config();
+
+dbConnection();
 
 app.use(
     cors({
@@ -27,8 +31,10 @@ app.use(
     })
 )
 
+app.get("/",async (req,res)=>{
+    return res.send("Hello")
+})
 
-console.log(process.env.PORT);
-
+app.use("/api/user",userRouter)
 
 export default app;
