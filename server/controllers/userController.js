@@ -1,6 +1,7 @@
-import {User} from "../models/userModel.js"
+import {User} from "../models/userModel.js";
 import bcrypt from "bcryptjs";
-import {generateToken} from "../lib/jwtToken.js" 
+import {generateToken} from "../lib/jwtToken.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const signup = async(req, res)=>{
  const { fullName, email, password } = req.body;
@@ -96,9 +97,64 @@ export const signout = async(req, res)=>{
 }
 
 export const getUser = async(req, res)=>{
-    
+    const user=req.user;
+    return res.status(200).json({
+        success:true,
+        user,
+    })
 }
 
 export const updateProfile = async(req, res)=>{
-    
+    const { fullName }= req.body;
+    if(fullName.trim().length === 0){
+     return res.status(400).json({
+        success:false,
+        message:"Edited Details are Invalid..."
+     })
+    }
+    const avatar=req?.files?.avatar;
+    let cloudinaryResponse={};
+
+    if(avatar){
+        try{
+            const oldID=req?.user?.avatar?.id;
+            if(oldID && oldID.length>0){
+            await cloudinary.uploader.destroy(oldID)
+        }
+        cloudinaryResponse=await cloudinary.uploader.upload(avatar.tempFilePath,{
+            folder:"CHAT_APP_DP",
+            transformation:[
+                {width:300, height:300, crop:"limit"},
+                {quality: "auto"},
+                {fetch_format: "auto"}
+            ],
+        })
+        }
+        catch(err){
+        console.error("Cloudinary Upload Error: ",err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to Upload Avatar..."
+        });
+        }
+    }
+    let data ={
+        fullName,
+    }
+    if(avatar && cloudinaryResponse?.public_id && cloudinaryResponse?.secure_url){
+        data.avatar={
+            id: cloudinaryResponse.public_id,
+            url: cloudinaryResponse.secure_url,
+        }
+    }
+    let user=await User.findOne(req.user._id);
+    user.fullName=data?.fullName;
+    user.avatar=data?.avatar;
+    await user.save();
+
+    return res.status(200).json({
+        success:true,
+        message:"User Updated Successfully...."
+    })
+
 }
