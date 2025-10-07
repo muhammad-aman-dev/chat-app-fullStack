@@ -143,7 +143,6 @@ export const updateProfile = async(req, res)=>{
     }
     let user=await User.findOne({_id:req.user._id});
     if(avatar && cloudinaryResponse?.public_id && cloudinaryResponse?.secure_url){
-        console.log("yes")
         user.avatar.id= cloudinaryResponse.public_id;
         user.avatar.url= cloudinaryResponse.secure_url;
     }
