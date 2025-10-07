@@ -141,20 +141,19 @@ export const updateProfile = async(req, res)=>{
     let data ={
         fullName,
     }
+    let user=await User.findOne({_id:req.user._id});
     if(avatar && cloudinaryResponse?.public_id && cloudinaryResponse?.secure_url){
-        data.avatar={
-            id: cloudinaryResponse.public_id,
-            url: cloudinaryResponse.secure_url,
-        }
+        console.log("yes")
+        user.avatar.id= cloudinaryResponse.public_id;
+        user.avatar.url= cloudinaryResponse.secure_url;
     }
-    let user=await User.findOne(req.user._id);
     user.fullName=data?.fullName;
-    user.avatar=data?.avatar;
     await user.save();
 
     return res.status(200).json({
         success:true,
-        message:"User Updated Successfully...."
+        message:"User Updated Successfully....",
+        url:cloudinaryResponse.secure_url || "",
     })
 
 }

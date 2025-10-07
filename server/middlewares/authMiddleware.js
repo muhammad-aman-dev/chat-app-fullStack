@@ -16,7 +16,7 @@ export const isAuthenticated=async(req, res, next)=>{
             message:"User Verification Authenticated Failed..."
         })
     }
-    const user=await User.findOne(decoded.id);
+    const user=await User.findOne({_id:decoded.id});
     req.user=user;
     next();
 }
