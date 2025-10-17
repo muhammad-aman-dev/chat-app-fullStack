@@ -5,6 +5,7 @@ import { connectSocket, disConnectSocket } from '../lib/socket.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "../pages/Home.jsx";
 import Navbar from '../components/Navbar.jsx';
+import Login from '../pages/Login.jsx';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={authUser ? <Home/> : <Navigate to={"/login"}/>}/>
+          <Route path='/login' element={<Login/>}/>
         </Routes>
       </Router>
     </>
