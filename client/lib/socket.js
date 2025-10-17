@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 let socket = null;
 
 export const connectSocket = (userID)=>{
-    socket = io(import.meta.env.BACKEND_URL,
+    socket = io(import.meta.env.VITE_BACKEND_URL,
         {
             query : { userID },
         }

@@ -4,6 +4,7 @@ import { getUser, setOnlineUsers } from '../store/slices/authslice.js';
 import { connectSocket, disConnectSocket } from '../lib/socket.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "../pages/Home.jsx";
+import Navbar from '../components/Navbar.jsx';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
 
   return (
     <>
+    <Navbar/>
       <Router>
         <Routes>
           <Route path='/' element={authUser ? <Home/> : <Navigate to={"/login"}/>}/>
