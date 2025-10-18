@@ -12,11 +12,12 @@ export function initSocket(server){
     )
 
 io.on("connection", (socket)=>{
-    console.log("User Connected to the server",socket.id)
-
+    
     const userID = socket.handshake.query.userID;
-
+    console.log("User Connected to the server",socket.id," And Database ID ",userID);
+    
     if(userID) userSocketMap[userID]=socket.id;
+
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap))
    

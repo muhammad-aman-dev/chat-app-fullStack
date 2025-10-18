@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUser, setOnlineUsers } from '../store/slices/authslice.js';
-import { connectSocket, disConnectSocket } from '../lib/socket.js';
+import { connectSocket, disConnectSocket, getSocket } from '../lib/socket.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "../pages/Home.jsx";
 import Navbar from '../components/Navbar.jsx';
 import Login from '../pages/Login.jsx';
+import Signup from '../pages/Signup.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Loader2 } from 'lucide-react';
@@ -16,19 +17,29 @@ function App() {
 
   useEffect(() => {
     dispatch(getUser());
-  }, [authUser]);
+  }, []);
 
   useEffect(() => {
-    if (authUser) {
-      const socket = connectSocket(authUser._id);
+  if (!authUser) return;
 
-      socket.on("getOnlineUsers", (users) => {
-        dispatch(setOnlineUsers(users));
-      });
+  const socket = getSocket() || connectSocket(authUser._id);
 
-      return () => disConnectSocket();
-    }
-  }, [authUser, dispatch]);
+  socket.on("getOnlineUsers", (users) => {
+    dispatch(setOnlineUsers(users));
+    
+  });
+
+  return () => {
+    socket.off("getOnlineUsers");
+  };
+}, [authUser, dispatch]);
+
+useEffect(() => {
+  if (!authUser) {
+    disConnectSocket();
+  }
+}, [authUser]);
+
 
   if (isCheckingAuth && !authUser) {
     return (
@@ -46,6 +57,7 @@ function App() {
         <Routes>
           <Route path='/' element={authUser ? <Home /> : <Navigate to={"/login"} />} />
           <Route path='/login' element={!authUser ? <Login /> : <Navigate to={"/"} />} />
+          <Route path='/signup' element={!authUser ? <Signup /> : <Navigate to={"/"} />} />
         </Routes>
       </Router>
 

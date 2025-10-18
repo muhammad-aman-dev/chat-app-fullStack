@@ -7,7 +7,7 @@ import { data } from "react-router-dom";
 export const getUser = createAsyncThunk("user/me", async(_, thunkAPI) => {
     try {
         const res= await axiosInstance.get('user/me');
-        connectSocket(res.data.user._id)
+        connectSocket(res.data.user)
         return res.data.user;
     } catch (error) {
         console.log("Error fetching user: ",error);
@@ -30,7 +30,7 @@ export const getUser = createAsyncThunk("user/me", async(_, thunkAPI) => {
 export const login = createAsyncThunk('user/signin', async(data,thunderAPI)=>{
     try {
         let res = await axiosInstance.post('user/signin',data);
-        connectSocket(res.data.user._id);
+        connectSocket(res.data.user);
         toast.success('Login Successfully');
         return res.data.user;
     } catch (error) {
@@ -38,6 +38,19 @@ export const login = createAsyncThunk('user/signin', async(data,thunderAPI)=>{
         return thunderAPI.rejectWithValue(error.response.data.message);
     }
  })
+
+ export const signup = createAsyncThunk('user/signup', async(data,thunderAPI)=>{
+    try {
+        let res = await axiosInstance.post('user/signup',data);
+        connectSocket(res.data.user);
+        toast.success('Registered Successfully');
+        return res.data.user;
+    } catch (error) {
+        toast.error(error.response.data.message);
+        return thunderAPI.rejectWithValue(error.response.data.message);
+    }
+ })
+
 
 const authSlice = createSlice({
     name : 'auth',
@@ -52,6 +65,7 @@ const authSlice = createSlice({
     reducers : {
         setOnlineUsers(state, action){
             state.onlineUsers = action.payload;
+            console.log(state.onlineUsers)
         }
     },
     extraReducers : (builder)=>{
@@ -83,6 +97,18 @@ const authSlice = createSlice({
         .addCase(login.rejected, (state)=>{
             state.isLoggingIn= false;
         })
+        .addCase(signup.pending, (state)=>{
+            state.isSignUp = true;
+        })
+        .addCase(signup.fulfilled,(state, action)=>{
+            state.authUser = action.payload;       
+            state.isSignUp = false;
+            console.log(state.authUser)
+        })
+        .addCase(signup.rejected, (state)=>{
+            state.isSignUp = false;
+        })
+
     }
 });
 

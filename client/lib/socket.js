@@ -2,10 +2,10 @@ import { io } from "socket.io-client";
 
 let socket = null;
 
-export const connectSocket = (userID)=>{
-
+export const connectSocket = (id)=>{
+    const userID=id._id;
     if(socket) return socket;
-
+    
     socket = io(import.meta.env.VITE_BACKEND_URL,
         {
             query : { userID },

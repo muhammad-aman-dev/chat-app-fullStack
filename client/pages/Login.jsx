@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 import { login } from "../store/slices/authslice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
    const [togglePass, settogglePass] = useState('password');
@@ -18,7 +18,6 @@ const Login = () => {
    const [isReqSent, setisReqSent] = useState(false);
    const [email, setemail] = useState('');
    const [password, setpassword] = useState('');
-   const { isLoggingIn } = useSelector((state)=> state.auth)
 
   const dispatch=useDispatch();
 
@@ -35,6 +34,11 @@ const Login = () => {
    }
 
    function handleLogin() {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailPattern.test(email)){
+     toast.error('Email Format Mismatched...')
+     return
+    }
      if(email!='' && password!=''){
       const data={
         email,
