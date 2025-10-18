@@ -2,11 +2,12 @@ import { createAsyncThunk ,createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios.js";
 import { connectSocket, disConnectSocket } from "../../lib/socket.js";
 import { toast } from "react-toastify";
+import { data } from "react-router-dom";
 
 export const getUser = createAsyncThunk("user/me", async(_, thunkAPI) => {
     try {
         const res= await axiosInstance.get('user/me');
-        connectSocket(res.data.user)
+        connectSocket(res.data.user._id)
         return res.data.user;
     } catch (error) {
         console.log("Error fetching user: ",error);
@@ -23,8 +24,20 @@ export const getUser = createAsyncThunk("user/me", async(_, thunkAPI) => {
         toast.error(error.response.data.message || "Error Logging Out....")
         return thunderAPI.rejectWithValue(error.response.data.message);
     }
- })
+})
 
+
+export const login = createAsyncThunk('user/signin', async(data,thunderAPI)=>{
+    try {
+        let res = await axiosInstance.post('user/signin',data);
+        connectSocket(res.data.user._id);
+        toast.success('Login Successfully');
+        return res.data.user;
+    } catch (error) {
+        toast.error(error.response.data.message);
+        return thunderAPI.rejectWithValue(error.response.data.message);
+    }
+ })
 
 const authSlice = createSlice({
     name : 'auth',
@@ -58,7 +71,18 @@ const authSlice = createSlice({
         })
         .addCase(logOut.rejected, (state)=>{
             state.authUser = state.authUser;
-        });
+        })
+        .addCase(login.pending, (state)=>{
+            state.isLoggingIn = true;
+        })
+        .addCase(login.fulfilled,(state, action)=>{
+            state.authUser = action.payload;       
+            state.isLoggingIn = false;
+            console.log(state.authUser)
+        })
+        .addCase(login.rejected, (state)=>{
+            state.isLoggingIn= false;
+        })
     }
 });
 

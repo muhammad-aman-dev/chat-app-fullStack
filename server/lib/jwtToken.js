@@ -12,6 +12,7 @@ export const generateToken= async (user, message, statusCode, res)=>{
         secure : process.env.CURR_STATUS !== "development" ? true : false,
     }).json({
         success : true,
+        user,
         message,
         token
     });

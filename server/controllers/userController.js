@@ -3,14 +3,8 @@ import bcrypt from "bcryptjs";
 import {generateToken} from "../lib/jwtToken.js";
 import { v2 as cloudinary } from "cloudinary";
 import nodemailer from "nodemailer";
+import logs from '../models/logs.js';
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 export const signup = async(req, res)=>{
  const { fullName, email, password } = req.body;
@@ -168,116 +162,148 @@ export const updateProfile = async(req, res)=>{
 
 
 export const transportmail = async (req, res) => {
-  const { email,type} = req.body;
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+  
+  const { email, type } = req.body;
+  let user=await User.findOne({email});
+if(!user){
+  return res.status(400).send('No user with this Email exists please signup first or check again check email...')
+}
+
   const otp = Math.floor(100000 + Math.random() * 900000);
   let newhtml;
-  if(type=='sign up'){
-    newhtml=`<!DOCTYPE html>
+
+  // ✅ Replace this URL with your actual WeChat logo image on Cloudinary
+  const LOGO_URL = "https://res.cloudinary.com/dii4fqc0r/image/upload/v1760780285/WeChat%20Logo.png";
+
+  if (type === 'sign up') {
+    newhtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OTP Email</title>
+  <title>Welcome to WeChat</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+<body style="margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background-color:#f3f4f6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
     <tr>
-      <td align="center" style="padding: 40px 0;">
-        <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <td align="center" style="padding:40px 0;">
+        <table width="600" cellspacing="0" cellpadding="0" border="0" style="background-color:#ffffff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;">
           <tr>
-            <td align="center" style="padding: 30px;">
+            <td align="center" style="padding:40px 30px;">
+              
               <!-- ✅ LOGO -->
-              <img src="https://res.cloudinary.com/dii4fqc0r/image/upload/v1752464173/Doctor-removebg-preview_fxyzoo.png" alt="Doctor Online Logo" width="120" style="display: block; margin-bottom: 20px;" />
-              <!-- ✅ HEADING -->
-              <h1 style="color: #2d3748;">Thanks for Signing Up!</h1>
-              <p style="color: #4a5568; font-size: 16px;">Welcome to <strong>Doctor Online</strong>. We're glad to have you!</p>
-              <!-- ✅ OTP -->
-              <div style="margin: 30px 0;">
-                <p style="color: #2d3748; font-size: 16px;">Your OTP for Sign Up is:</p>
-                <div style="font-size: 28px; font-weight: bold; color: #3182ce; letter-spacing: 4px; background-color: #ebf8ff; padding: 10px 20px; border-radius: 6px; display: inline-block;">
-                  ${otp}
-                </div>
+              <img src="${LOGO_URL}" alt="WeChat Logo" width="120" style="display:block;margin-bottom:20px;" />
+              
+              <!-- ✅ TITLE -->
+              <h1 style="color:#1e3a8a;margin-bottom:10px;">Welcome to <span style="background:linear-gradient(to right,#3b82f6,#6366f1);-webkit-background-clip:text;color:transparent;">WeChat</span>!</h1>
+              
+              <!-- ✅ MESSAGE -->
+              <p style="color:#4b5563;font-size:16px;margin-bottom:25px;">We’re thrilled to have you join the WeChat community. To complete your registration, please verify your email using the OTP below:</p>
+              
+              <!-- ✅ OTP BOX -->
+              <div style="font-size:28px;font-weight:bold;color:#3b82f6;letter-spacing:4px;background-color:#eff6ff;padding:12px 24px;border-radius:8px;display:inline-block;margin-bottom:30px;">
+                ${otp}
               </div>
-              <p style="color: #718096; font-size: 14px;">Please use this OTP and do not share to anyone. If you didn't request this, just ignore this email.</p>
-              <!-- ✅ Footer -->
-              <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;" />
-              <p style="font-size: 12px; color: #a0aec0;">&copy; 2025 Doctor Online. All rights reserved.</p>
-              <p style="font-size: 12px; color: #a0aec0;">Contact us at <a href="mailto:amanmuhammad567@gmail.com" style="color: #3182ce;">amanmuhammad567@gmail.com</a></p>
+
+              <p style="color:#6b7280;font-size:14px;">This OTP is valid for a short time. Please do not share it with anyone.</p>
+
+              <!-- ✅ FOOTER -->
+              <hr style="margin:30px 0;border:none;border-top:1px solid #e5e7eb;" />
+              <p style="font-size:12px;color:#9ca3af;">&copy; 2025 WeChat. All rights reserved.</p>
+              <p style="font-size:12px;color:#9ca3af;">Need help? Contact <a href="mailto:support@wechat.com" style="color:#3b82f6;text-decoration:none;">support@wechat.com</a></p>
             </td>
           </tr>
         </table>
       </td>
     </tr>
-  </table>  
+  </table>
 </body>
-</html>`
+</html>`;
   }
-  if(type=='password forget'){
-    newhtml=`<!DOCTYPE html>
+
+  if (type === 'password forget') {
+    newhtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Password Reset</title>
+  <title>WeChat Password Reset</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+<body style="margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif;background-color:#f3f4f6;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
     <tr>
-      <td align="center" style="padding: 40px 0;">
-        <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+      <td align="center" style="padding:40px 0;">
+        <table width="600" cellspacing="0" cellpadding="0" border="0" style="background-color:#ffffff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.1);overflow:hidden;">
           <tr>
-            <td align="center" style="padding: 30px;">
-              <!-- ✅ Logo -->
-              <img src="https://res.cloudinary.com/dii4fqc0r/image/upload/v1752464173/Doctor-removebg-preview_fxyzoo.png" alt="Doctor Online Logo" width="120" style="display: block; margin-bottom: 20px;" />
+            <td align="center" style="padding:40px 30px;">
               
-              <!-- ✅ Heading -->
-              <h2 style="color: #2d3748;">Password Reset Request</h2>
-              <p style="color: #4a5568; font-size: 16px;">We received a request to reset your password.</p>
+              <!-- ✅ LOGO -->
+              <img src="${LOGO_URL}" alt="WeChat Logo" width="120" style="display:block;margin-bottom:20px;" />
               
-              <!-- ✅ OTP Section -->
-              <div style="margin: 30px 0;">
-                <p style="color: #2d3748; font-size: 16px;">Use the following OTP to reset your password:</p>
-                <div style="font-size: 28px; font-weight: bold; color: #e53e3e; letter-spacing: 4px; background-color: #fff5f5; padding: 10px 20px; border-radius: 6px; display: inline-block;">
-                  ${otp}
-                </div>
+              <!-- ✅ TITLE -->
+              <h2 style="color:#1e3a8a;margin-bottom:10px;">Reset Your WeChat Password</h2>
+              
+              <!-- ✅ MESSAGE -->
+              <p style="color:#4b5563;font-size:16px;margin-bottom:25px;">We received a request to reset the password for your WeChat account. Use the OTP below to proceed:</p>
+              
+              <!-- ✅ OTP BOX -->
+              <div style="font-size:28px;font-weight:bold;color:#6366f1;letter-spacing:4px;background-color:#eef2ff;padding:12px 24px;border-radius:8px;display:inline-block;margin-bottom:30px;">
+                ${otp}
               </div>
 
-              <!-- ✅ Reminder -->
-              <p style="color: #718096; font-size: 14px;">This OTP is valid for a limited time. If you didn’t request a password reset, you can safely ignore this email.</p>
+              <p style="color:#6b7280;font-size:14px;">If you didn’t request a password reset, please ignore this email — your account remains secure.</p>
 
-              <!-- ✅ Footer -->
-              <hr style="margin: 30px 0; border: none; border-top: 1px solid #e2e8f0;" />
-              <p style="font-size: 12px; color: #a0aec0;">&copy; 2025 Doctor Online. All rights reserved.</p>
-              <p style="font-size: 12px; color: #a0aec0;">
-                Contact support: 
-                <a href="mailto:amanmuhammad567@gmail.com" style="color: #3182ce;">amanmuhammad567@gmail.com</a>
-              </p>
+              <!-- ✅ FOOTER -->
+              <hr style="margin:30px 0;border:none;border-top:1px solid #e5e7eb;" />
+              <p style="font-size:12px;color:#9ca3af;">&copy; 2025 WeChat. All rights reserved.</p>
+              <p style="font-size:12px;color:#9ca3af;">Need help? Contact <a href="mailto:support@wechat.com" style="color:#3b82f6;text-decoration:none;">support@wechat.com</a></p>
             </td>
           </tr>
         </table>
       </td>
     </tr>
-  </table>  
+  </table>
 </body>
-</html>`
+</html>`;
   }
+
   const mailOptions = {
     from: process.env.EMAIL,
     to: email,
-    subject: "Verify Your Email - WeChat",
+    subject: `WeChat ${type === 'sign up' ? 'Email Verification' : 'Password Reset'} OTP`,
     html: newhtml,
   };
+
   transporter.sendMail(mailOptions, async (err, info) => {
     if (err) {
       console.log(err);
       return res.status(400).send("Some Error Occurred.");
     }
     console.log(email + " " + otp);
-    let log=new logs({
-      mail:email,
-      Otp:otp
-    })
+    let log = new logs({
+      mail: email,
+      Otp: otp,
+    });
     await log.save();
     return res.status(200).send(`${otp}`);
   });
 };
+
+export const changePass = async (req, res)=>{
+  const {email, password} = req.body;
+  let user=await User.findOne({email});
+  if(!user){
+    return res.status(400).send('No user with this Email exists');
+  }
+ const hashedPass=await bcrypt.hash(password,10);
+ user.password=hashedPass;
+ await user.save();  
+ return res.status(200).send('Password Changed Successfully.')
+} 
