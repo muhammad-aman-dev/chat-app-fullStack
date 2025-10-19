@@ -14,7 +14,7 @@ export function initSocket(server){
 io.on("connection", (socket)=>{
     
     const userID = socket.handshake.query.userID;
-    console.log("User Connected to the server",socket.id," And Database ID ",userID);
+    console.log("User Connected to the server",socket.id," with Database ID ",userID);
     
     if(userID) userSocketMap[userID]=socket.id;
 
