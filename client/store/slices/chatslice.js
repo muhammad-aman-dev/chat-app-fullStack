@@ -14,6 +14,23 @@ export const getChatedusers=createAsyncThunk('message/getchatusers',async(userId
   }
 })
 
+export const setSelectedUser = createAsyncThunk('message/:id',async(user,thunkAPI)=>{
+  console.log(user._id)
+  try{
+    const res = await axiosInstance.get(`message/${user._id}`);
+    console.log(res.data)
+    let data = {
+      messages : res.data.messages,
+      selecteduser : user
+    }
+    return data;
+  }
+  catch(err){
+   toast('Error While Fetching Chat...');
+   console.log(err);
+  }
+})
+
 
 
 const chatSlice= createSlice({
@@ -22,7 +39,9 @@ const chatSlice= createSlice({
         allUsers : [],
         chatedUsers : [],
         isLoadingChatList : false,
-
+        selectedChat : null,
+        chatWithUser : null,
+        isLoadingChat : false
     },
     reducers : {
      setallUsers(state,action){
@@ -41,6 +60,17 @@ const chatSlice= createSlice({
         })
         .addCase(getChatedusers.rejected,(state)=>{
           state.isLoadingChatList=false;
+        })
+        .addCase(setSelectedUser.fulfilled,(state,action)=>{
+          state.chatWithUser = action.payload.messages;
+          state.selectedChat = action.payload.selecteduser;
+          state.isLoadingChat = false;
+        })
+        .addCase(setSelectedUser.rejected,(state)=>{
+          state.isLoadingChat = false;
+        })
+        .addCase(setSelectedUser.pending,(state)=>{
+          state.isLoadingChat = true;
         })
 
     }

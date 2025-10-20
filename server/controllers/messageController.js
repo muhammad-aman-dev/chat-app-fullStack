@@ -14,7 +14,7 @@ export const getAllUsers= async(req, res, next)=>{
 }
 
 export const getMessages= async(req, res, next)=>{
- const recieverID = req.paramas.id;
+ const recieverID = req.params.id;
  const myID = req.user._id;
  const reciever= await User.findOne({_id:recieverID});
  if(!reciever){
