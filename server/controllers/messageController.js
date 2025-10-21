@@ -2,7 +2,7 @@ import { User } from "../models/userModel.js";
 import { Message } from "../models/messageModel.js"
 import { v2 as cloudinary } from "cloudinary";
 import { getRecieverSocketId } from "../lib/socket.js";
-import mongoose from "mongoose";
+
 
 export const getAllUsers= async(req, res, next)=>{
     const user=req.user;
