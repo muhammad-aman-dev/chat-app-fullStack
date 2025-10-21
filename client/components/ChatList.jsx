@@ -31,7 +31,6 @@ const ChatList = () => {
 
   return (
     <div className="w-full sm:w-[30%] flex flex-col text-blue-600 bg-white border-r border-gray-200 shadow-sm">
-      {/* Header */}
       <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
         <div className="flex items-center gap-2">
           <MessageSquareText color="#fff" size={22} />
@@ -44,7 +43,6 @@ const ChatList = () => {
         />
       </div>
 
-      {/* Search Bar */}
       <div className="flex items-center gap-4 p-3">
         <input
           type="text"
@@ -53,7 +51,6 @@ const ChatList = () => {
         />
       </div>
 
-      {/* Chats Header */}
       <div className="flex justify-between items-center px-3 pb-2 border-b border-gray-100">
         <h3 className="text-lg font-bold sm:text-xl text-blue-600">Chats</h3>
         <p className="mr-2 text-gray-600">
@@ -61,7 +58,6 @@ const ChatList = () => {
         </p>
       </div>
 
-      {/* Chat List */}
       <div className="chats flex flex-col gap-1 h-full w-full overflow-y-auto custom-scrollbar">
         {chatedUsers.map((chat, index) => {
           const user = allUsers.find((u) => u._id === chat.userId);
@@ -92,7 +88,10 @@ const ChatList = () => {
                   }`}
                 ></span>
               </div>
+              <div className="flex flex-col gap-2 justify-center">
               <div className="Name font-bold truncate">{user.fullName}</div>
+              <div className="Name text-xs truncate">{user.email}</div>
+              </div>
             </div>
           );
         })}

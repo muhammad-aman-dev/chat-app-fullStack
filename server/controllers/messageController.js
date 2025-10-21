@@ -2,6 +2,8 @@ import { User } from "../models/userModel.js";
 import { Message } from "../models/messageModel.js"
 import { v2 as cloudinary } from "cloudinary";
 import { getRecieverSocketId } from "../lib/socket.js";
+import { io } from "../lib/socket.js";
+import mongoose from "mongoose";
 
 
 export const getAllUsers= async(req, res, next)=>{
@@ -24,11 +26,12 @@ export const getMessages= async(req, res, next)=>{
     })
  }
  const messages = await Message.find({
-    $or :[
-        {sender : myID, reciever : recieverID},
-        {sender : recieverID, reciever : myID}
-    ]
- }).sort({createdAt : 1});
+  $or: [
+    { sender: myID, reciever: recieverID },
+    { sender: recieverID, reciever: myID },
+  ],
+}).sort({ createdAt: 1 });
+
 
  res.status(200).json({
     success : true,
@@ -38,6 +41,7 @@ export const getMessages= async(req, res, next)=>{
 
 export const sendMessage= async(req, res, next)=>{
    const {text}=req.body;
+   console.log(text)
    const media=req?.files?.media;
    const recieverID=req.params.id;
    const senderID=req.user._id;
@@ -82,8 +86,8 @@ export const sendMessage= async(req, res, next)=>{
  }
 
  const newMessage = await Message.create({
-    senderID,
-    recieverID,
+    sender : senderID,
+    reciever : recieverID,
     text: filteredText,
     media: mediaUrl,
  });
@@ -99,14 +103,15 @@ res.status(200).json(newMessage);
 
 export const getChatUsers = async (req, res) => {
   try {
-    const userId = req.params.userId; // keep as string
+    const userId = req.params.userId;
+    const userObjectId = new mongoose.Types.ObjectId(userId);
 
     const users = await Message.aggregate([
       {
         $match: {
           $or: [
-            { sender: userId },
-            { reciever: userId }
+            { sender: userObjectId },
+            { reciever: userObjectId }
           ]
         }
       },
@@ -115,7 +120,7 @@ export const getChatUsers = async (req, res) => {
         $group: {
           _id: {
             $cond: [
-              { $eq: ["$sender", userId] },
+              { $eq: ["$sender", userObjectId] },
               "$reciever",
               "$sender"
             ]
@@ -126,12 +131,11 @@ export const getChatUsers = async (req, res) => {
         }
       },
       { $sort: { lastMessageTime: -1 } },
-      // optional lookup (only if your user collection uses string _id too)
       {
         $lookup: {
-          from: "users", // or "user" depending on your actual collection name
+          from: "users",
           localField: "_id",
-          foreignField: "_id", // only works if user._id is also a string
+          foreignField: "_id",
           as: "userInfo"
         }
       },
@@ -155,3 +159,4 @@ export const getChatUsers = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+

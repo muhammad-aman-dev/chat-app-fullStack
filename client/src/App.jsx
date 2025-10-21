@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUser, setOnlineUsers } from '../store/slices/authslice.js';
+import { setChatwithUser } from '../store/slices/chatslice.js';
 import { connectSocket, disConnectSocket, getSocket } from '../lib/socket.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "../pages/Home.jsx";
@@ -11,8 +12,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Loader2 } from 'lucide-react';
 
+
 function App() {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
+  const { chatWithUser } = useSelector((state)=> state.chat);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,6 +31,10 @@ function App() {
     dispatch(setOnlineUsers(users));
     
   });
+  socket.on("newMessage", (message)=>{
+    console.log('fire')
+    dispatch(setChatwithUser(message));
+  })
 
   return () => {
     socket.off("getOnlineUsers");

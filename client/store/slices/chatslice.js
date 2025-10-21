@@ -31,6 +31,20 @@ export const setSelectedUser = createAsyncThunk('message/:id',async(user,thunkAP
   }
 })
 
+export const setsendMessage = createAsyncThunk('message/send/:id',async(message,thunkAPI)=>{
+  try {
+    const id = message.id;
+    const data = message.data;
+    console.log(id,data)
+    const response = await axiosInstance.post(`message/send/${id}`,data);
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    toast('Error Sending Message...');
+    return thunkAPI.rejectWithValue(error.response?.data || "Failed to Send Message");
+  }
+})
 
 
 const chatSlice= createSlice({
@@ -41,11 +55,15 @@ const chatSlice= createSlice({
         isLoadingChatList : false,
         selectedChat : null,
         chatWithUser : null,
-        isLoadingChat : false
+        isLoadingChat : false,
+        isSendingMessage : false,
     },
     reducers : {
      setallUsers(state,action){
        state.allUsers=action.payload;
+     },
+     setChatwithUser(state, action){
+      state.chatWithUser = [...state.chatWithUser, action.payload];
      }
     },
     extraReducers : (builder)=>{
@@ -72,10 +90,26 @@ const chatSlice= createSlice({
         .addCase(setSelectedUser.pending,(state)=>{
           state.isLoadingChat = true;
         })
+        .addCase(setsendMessage.pending,(state)=>{
+            state.isSendingMessage = true;
+        })
+        .addCase(setsendMessage.fulfilled,(state, action)=>{
+            state.isSendingMessage = false;
+
+            if (state.chatWithUser) {
+    state.chatWithUser = [...state.chatWithUser, action.payload];
+     }
+      else {
+    state.chatWithUser = [action.payload];
+        }
+        })
+        .addCase(setsendMessage.rejected,(state)=>{
+            state.isSendingMessage = false;
+        })
 
     }
 })
 
 
-export const { setallUsers } = chatSlice.actions;
+export const { setallUsers, setChatwithUser } = chatSlice.actions;
 export default chatSlice.reducer;
