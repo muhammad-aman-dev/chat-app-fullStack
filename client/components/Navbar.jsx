@@ -18,7 +18,10 @@ const Navbar = () => {
         {authUser && (
         <div className='flex gap-3 sm:gap-10 items-center'>
           <div className='flex items-center'>
+            <div className='flex flex-col justify-center'>
             <span className='text-lg hidden sm:inline-block font-bold bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent ml-1'>{authUser.fullName}</span>
+            <span className='text-xs hidden sm:inline-block font-bold bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent ml-1'>{authUser.email}</span>
+            </div>
           <UserRound color='#5856d6' strokeWidth={'2.25px'} className='hover:scale-105 duration-300 cursor-pointer'/>
         </div>
           <button

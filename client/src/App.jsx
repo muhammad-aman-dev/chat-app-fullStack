@@ -1,53 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUser, setOnlineUsers } from '../store/slices/authslice.js';
-import { setChatwithUser } from '../store/slices/chatslice.js';
+import { setChatwithUser, setChatedUsers } from '../store/slices/chatslice.js';
 import { connectSocket, disConnectSocket, getSocket } from '../lib/socket.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "../pages/Home.jsx";
 import Navbar from '../components/Navbar.jsx';
 import Login from '../pages/Login.jsx';
 import Signup from '../pages/Signup.jsx';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Loader2 } from 'lucide-react';
-
+import { getAllUsers } from '../store/slices/chatslice.js';
 
 function App() {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
-  const { chatWithUser } = useSelector((state)=> state.chat);
+  const { chatedUsers, selectedChat } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
 
+  // ✅ Fetch logged-in user and all users
   useEffect(() => {
     dispatch(getUser());
-  }, []);
+    dispatch(getAllUsers());
+  }, [dispatch]);
 
+  // ✅ Handle socket connections
   useEffect(() => {
-  if (!authUser) return;
+    if (!authUser) return;
 
-  const socket = getSocket() || connectSocket(authUser._id);
+    const socket = getSocket() || connectSocket(authUser._id);
 
-  socket.on("getOnlineUsers", (users) => {
-    dispatch(setOnlineUsers(users));
-    
-  });
-  socket.on("newMessage", (message)=>{
-    console.log('fire')
-    dispatch(setChatwithUser(message));
-  })
+    socket.on("getOnlineUsers", (users) => {
+      dispatch(setOnlineUsers(users));
+    });
 
-  return () => {
-    socket.off("getOnlineUsers");
-  };
-}, [authUser, dispatch]);
+    socket.on("newMessage", (message) => {
+      console.log('🔥 New message received');
+      if (selectedChat?._id === message.sender) {
+        dispatch(setChatwithUser(message));
+      }
 
-useEffect(() => {
-  if (!authUser) {
-    disConnectSocket();
-  }
-}, [authUser]);
+      const exists = chatedUsers.some((user) => user.userId === message.sender);
+      if (!exists) {
+        dispatch(setChatedUsers({ userId: message.sender }));
+      }
+    });
 
+    return () => {
+      socket.off("getOnlineUsers");
+      socket.off("newMessage");
+    };
+  }, [authUser, dispatch, chatedUsers, selectedChat]);
 
+  // ✅ Disconnect socket on logout
+  useEffect(() => {
+    if (!authUser) {
+      disConnectSocket();
+    }
+  }, [authUser]);
+
+  // ✅ Loader while checking auth
   if (isCheckingAuth && !authUser) {
     return (
       <div className="flex flex-col items-center justify-center h-[100vh] bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -62,9 +74,9 @@ useEffect(() => {
       <Navbar />
       <Router>
         <Routes>
-          <Route path='/' element={authUser ? <Home /> : <Navigate to={"/login"} />} />
-          <Route path='/login' element={!authUser ? <Login /> : <Navigate to={"/"} />} />
-          <Route path='/signup' element={!authUser ? <Signup /> : <Navigate to={"/"} />} />
+          <Route path="/" element={authUser ? <Home /> : <Navigate to="/login" />} />
+          <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} />
+          <Route path="/signup" element={!authUser ? <Signup /> : <Navigate to="/" />} />
         </Routes>
       </Router>
 

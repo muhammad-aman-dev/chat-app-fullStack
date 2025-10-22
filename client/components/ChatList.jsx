@@ -1,29 +1,27 @@
 import { Plus, MessageSquareText } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
-import { axiosInstance } from "../lib/axios";
 import { useEffect } from "react";
-import { setallUsers, getChatedusers, setSelectedUser, setChoosingNew } from "../store/slices/chatslice";
+import {
+  getAllUsers,
+  getChatedusers,
+  setSelectedUser,
+  setChoosingNew,
+} from "../store/slices/chatslice";
 
 const ChatList = () => {
   const { onlineUsers, authUser } = useSelector((state) => state.auth);
-  const { isLoadingChatList, allUsers, chatedUsers, selectedChat } = useSelector((state) => state.chat);
+  const { isLoadingChatList, allUsers, chatedUsers, selectedChat } = useSelector(
+    (state) => state.chat
+  );
   const dispatch = useDispatch();
 
-  const getAllUsers = async () => {
-    try {
-      const res = await axiosInstance.get("message/allusers");
-      dispatch(setallUsers(res.data.users));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   useEffect(() => {
-    getAllUsers();
+    // Fetch all users and chat users when component mounts
+    dispatch(getAllUsers());
     if (authUser?._id) {
       dispatch(getChatedusers(authUser._id));
     }
-  }, []);
+  }, [dispatch, authUser]);
 
   const setUser = (user) => {
     dispatch(setSelectedUser(user));
@@ -31,6 +29,7 @@ const ChatList = () => {
 
   return (
     <div className="w-full sm:w-[30%] flex flex-col text-blue-600 bg-white border-r border-gray-200 shadow-sm">
+      {/* Header */}
       <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
         <div className="flex items-center gap-2">
           <MessageSquareText color="#fff" size={22} />
@@ -40,10 +39,11 @@ const ChatList = () => {
           color="#fff"
           size={22}
           className="hover:scale-110 transition-transform duration-200 cursor-pointer"
-          onClick={()=>{dispatch(setChoosingNew(true))}}
+          onClick={() => dispatch(setChoosingNew(true))}
         />
       </div>
 
+      {/* Search */}
       <div className="flex items-center gap-4 p-3">
         <input
           type="text"
@@ -52,50 +52,58 @@ const ChatList = () => {
         />
       </div>
 
+      {/* Title */}
       <div className="flex justify-between items-center px-3 pb-2 border-b border-gray-100">
         <h3 className="text-lg font-bold sm:text-xl text-blue-600">Chats</h3>
         <p className="mr-2 text-gray-600">
-          Online Users[{onlineUsers.length - 1}]
+          Online Users[{onlineUsers?.length ? onlineUsers.length - 1 : 0}]
         </p>
       </div>
 
+      {/* Chat list */}
       <div className="chats flex flex-col gap-1 h-full w-full overflow-y-auto custom-scrollbar">
-        {chatedUsers.map((chat, index) => {
-          const user = allUsers.find((u) => u._id === chat.userId);
-          if (!user) return null;
+        {isLoadingChatList ? (
+          <p className="text-center text-gray-400 p-4">Loading chats...</p>
+        ) : chatedUsers.length === 0 ? (
+          <p className="text-center text-gray-400 p-4">No chats yet</p>
+        ) : (
+          chatedUsers.map((chat, index) => {
+            const user = allUsers.find((u) => u._id === chat.userId);
+            if (!user) return null;
 
-          const isOnline = onlineUsers.includes(user._id);
-          const isSelected = selectedChat?._id === user._id;
+            const isOnline = onlineUsers.includes(user._id);
+            const isSelected = selectedChat?._id === user._id;
 
-          return (
-            <div
-              key={index}
-              onClick={() => setUser(user)}
-              className={`chat flex h-[70px] p-1 items-center gap-2 rounded-md cursor-pointer transition-all duration-200 ${
-                isSelected
-                  ? "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <div className="relative">
-                <img
-                  src={user.avatar?.url || "/defaultDp.png"}
-                  alt="DP"
-                  className="w-12 h-12 rounded-full object-cover border border-gray-300"
-                />
-                <span
-                  className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${
-                    isOnline ? "bg-green-400" : "bg-red-400"
-                  }`}
-                ></span>
+            return (
+              <div
+                key={index}
+                onClick={() => setUser(user)}
+                className={`chat flex h-[70px] p-1 items-center gap-2 rounded-md cursor-pointer transition-all duration-200 ${
+                  isSelected
+                    ? "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                <div className="relative">
+                  <img
+                    src={user.avatar?.url || "/defaultDp.png"}
+                    alt="DP"
+                    className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                  />
+                  <span
+                    className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white ${
+                      isOnline ? "bg-green-400" : "bg-red-400"
+                    }`}
+                  ></span>
+                </div>
+                <div className="flex flex-col gap-1 justify-center">
+                  <div className="font-bold truncate">{user.fullName}</div>
+                  <div className="text-xs truncate">{user.email}</div>
+                </div>
               </div>
-              <div className="flex flex-col gap-2 justify-center">
-              <div className="Name font-bold truncate">{user.fullName}</div>
-              <div className="Name text-xs truncate">{user.email}</div>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );

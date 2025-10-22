@@ -8,7 +8,7 @@ const NewChatSelect = () => {
     const [searchInput, setsearchInput] = useState('');
     const [isLoading, setisLoading] = useState(false);
     const [users, setusers] = useState([])
-    const { onlineUsers }=useSelector((state)=>state.auth)
+    const { onlineUsers, authUser }=useSelector((state)=>state.auth)
 
     const dispatch = useDispatch();
 
@@ -49,6 +49,10 @@ const NewChatSelect = () => {
             <div className="flex flex-col gap-4 overflow-y-auto">
             {users.map((user, index)=>{
                 const isOnline = onlineUsers.includes(user._id);
+                const isMe = user.email === authUser.email;
+                if(isMe){
+                  return null;
+                }
                 return <div
               key={index}
               onClick={() => setUser(user)}

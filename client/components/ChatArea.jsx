@@ -26,7 +26,7 @@ const ChatArea = () => {
   }
 
   return (
-    <div className="flex flex-col w-full h-screen">
+    <div className="flex flex-col w-full h-full">
       {!chatWithUser && !isLoadingChat && (
         <div className="flex flex-col items-center justify-center h-full gap-9">
           <div className="flex items-center">
@@ -54,28 +54,28 @@ const ChatArea = () => {
             <div className="flex items-center gap-5">
               <img
                 className="rounded-full w-14 h-14 object-cover"
-                src={selectedChat.avatar?.url || "/defaultDp.png"}
+                src={selectedChat?.avatar?.url || "/defaultDp.png"}
                 alt=""
               />
               <div className="flex flex-col gap-2">
-              <h5 className="text-white font-bold">{selectedChat.fullName}</h5>
-              <h5 className="text-white text-xs">{selectedChat.email}</h5>
+              <h5 className="text-white font-bold">{selectedChat?.fullName}</h5>
+              <h5 className="text-white text-xs">{selectedChat?.email}</h5>
               </div>
             </div>
             <div className="isonline">
               <p className="text-white font-bold text-lg sm:text-xl">
-                {onlineUsers.includes(selectedChat._id) ? "🟢 Online" : "🔴 Offline"}
+                {onlineUsers.includes(selectedChat?._id) ? "🟢 Online" : "🔴 Offline"}
               </p>
             </div>
           </div>
 
-          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%)] min-h-[calc(100%-130px)] bg-gray-50">
+          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%-50px)] min-h-[calc(100%-25px)] bg-gray-50">
           <div className="overflow-y-auto flex flex-col gap-2 w-full">
           {chatWithUser.map((message,index)=>{
             const isSender = message.sender === authUser._id;
             return (
               <div
-          key={message._id}
+          key={index}
           className={`flex w-full ${isSender ? "justify-end" : "justify-start"}`}
         >
           <div
