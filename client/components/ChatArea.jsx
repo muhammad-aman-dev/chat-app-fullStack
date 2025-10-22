@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Loader2, MessageSquareText, Plus, SendIcon } from "lucide-react";
 import { useState } from "react";
-import { setsendMessage, setChatedUsers } from "../store/slices/chatslice";
+import { setsendMessage, setChatedUsers, setLatestMessage } from "../store/slices/chatslice";
 
 const ChatArea = () => {
   const { isLoadingChat, selectedChat, chatWithUser, chatedUsers} = useSelector((state) => state.chat);
@@ -16,11 +16,7 @@ const ChatArea = () => {
         text : inputText
       }
     }
-    const exists = chatedUsers.some(chat => chat.userId === selectedChat._id);
-    if (!exists) {
-    dispatch(setChatedUsers(selectedChat));
-    }
-    console.log(data);
+     dispatch(setLatestMessage({userId : selectedChat._id}));
      dispatch(setsendMessage(data));
      setinputText('');
   }

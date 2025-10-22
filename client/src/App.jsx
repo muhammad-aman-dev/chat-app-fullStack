@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getUser, setOnlineUsers } from '../store/slices/authslice.js';
-import { setChatwithUser, setChatedUsers } from '../store/slices/chatslice.js';
+import { setChatwithUser, setChatedUsers, setLatestMessage } from '../store/slices/chatslice.js';
 import { connectSocket, disConnectSocket, getSocket } from '../lib/socket.js';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from "../pages/Home.jsx";
@@ -15,7 +15,7 @@ import { getAllUsers } from '../store/slices/chatslice.js';
 
 function App() {
   const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
-  const { chatedUsers, selectedChat } = useSelector((state) => state.chat);
+  const { chatedUsers, selectedChat, latestMessage } = useSelector((state) => state.chat);
   const dispatch = useDispatch();
 
   // ✅ Fetch logged-in user and all users
@@ -44,6 +44,7 @@ function App() {
       if (!exists) {
         dispatch(setChatedUsers({ userId: message.sender }));
       }
+      dispatch(setLatestMessage({userId : message.sender }));
     });
 
     return () => {
@@ -52,12 +53,45 @@ function App() {
     };
   }, [authUser, dispatch, chatedUsers, selectedChat]);
 
-  // ✅ Disconnect socket on logout
   useEffect(() => {
     if (!authUser) {
       disConnectSocket();
     }
   }, [authUser]);
+
+  useEffect(() => {
+    console.log(chatedUsers)
+  }, [chatedUsers])
+  
+ useEffect(() => {
+  if (!latestMessage?.userId) return;
+
+  const userId = latestMessage.userId;
+
+  const index = chatedUsers.findIndex((u) => u.userId === userId);
+
+  if (index !== -1) {
+    const updated = [...chatedUsers];
+    const [existing] = updated.splice(index, 1);
+    updated.unshift({
+      ...existing,
+      lastMessageTime: new Date().toISOString(), 
+    });
+    dispatch(setChatedUsers(updated));
+  } else {
+    
+    const newUser = {
+      userId,
+      lastMessage: "New message", 
+      lastMessageTime: new Date().toISOString(),
+      avatar: { id: "", url: "" },
+    };
+    dispatch(setChatedUsers([newUser, ...chatedUsers]));
+  }
+}, [latestMessage]);
+
+  
+
 
   // ✅ Loader while checking auth
   if (isCheckingAuth && !authUser) {

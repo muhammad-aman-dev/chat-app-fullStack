@@ -65,6 +65,7 @@ const chatSlice = createSlice({
     isLoadingChat: false,
     isSendingMessage: false,
     isChoosingNew: false,
+    latestMessage : null,
   },
   reducers: {
     setChatwithUser(state, action) {
@@ -78,16 +79,27 @@ const chatSlice = createSlice({
       state.isChoosingNew = action.payload;
     },
     setChatedUsers(state, action) {
-      const newUser = action.payload;
-      const exists = state.chatedUsers.some((chat) => chat.userId === newUser.userId);
-      if (!exists) {
-        state.chatedUsers.push({ userId: newUser.userId });
-      }
+      const payload = action.payload;
+
+  if (Array.isArray(payload)) {
+    // whole array update
+    state.chatedUsers = payload;
+  } else if (payload && typeof payload === "object") {
+    // single object -> add to array safely
+    const exists = state.chatedUsers.some((u) => u.userId === payload.userId);
+    if (!exists) {
+      state.chatedUsers.unshift(payload);
+    }
+  } else {
+    console.warn("Invalid payload for setChatedUsers:", payload);
+  }
     },
+    setLatestMessage(state, action){
+      state.latestMessage = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
-      // ✅ Get all users
       .addCase(getAllUsers.pending, (state) => {
         state.isLoadingChatList = true;
       })
@@ -142,5 +154,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setChatwithUser, setChoosingNew, setChatedUsers } = chatSlice.actions;
+export const { setChatwithUser, setChoosingNew, setChatedUsers, setLatestMessage } = chatSlice.actions;
 export default chatSlice.reducer;
