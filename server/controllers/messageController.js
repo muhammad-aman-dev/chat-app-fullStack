@@ -41,7 +41,6 @@ export const getMessages= async(req, res, next)=>{
 
 export const sendMessage= async(req, res, next)=>{
    const {text}=req.body;
-   console.log(text)
    const media=req?.files?.media;
    const recieverID=req.params.id;
    const senderID=req.user._id;

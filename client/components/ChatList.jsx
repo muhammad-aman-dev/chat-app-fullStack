@@ -2,7 +2,7 @@ import { Plus, MessageSquareText } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { axiosInstance } from "../lib/axios";
 import { useEffect } from "react";
-import { setallUsers, getChatedusers, setSelectedUser } from "../store/slices/chatslice";
+import { setallUsers, getChatedusers, setSelectedUser, setChoosingNew } from "../store/slices/chatslice";
 
 const ChatList = () => {
   const { onlineUsers, authUser } = useSelector((state) => state.auth);
@@ -40,6 +40,7 @@ const ChatList = () => {
           color="#fff"
           size={22}
           className="hover:scale-110 transition-transform duration-200 cursor-pointer"
+          onClick={()=>{dispatch(setChoosingNew(true))}}
         />
       </div>
 

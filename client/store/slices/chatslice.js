@@ -57,6 +57,7 @@ const chatSlice= createSlice({
         chatWithUser : null,
         isLoadingChat : false,
         isSendingMessage : false,
+        isChoosingNew : false,
     },
     reducers : {
      setallUsers(state,action){
@@ -64,7 +65,18 @@ const chatSlice= createSlice({
      },
      setChatwithUser(state, action){
       state.chatWithUser = [...state.chatWithUser, action.payload];
-     }
+     },
+     setChoosingNew(state, action){
+      state.isChoosingNew = action.payload;
+     },
+     setChatedUsers: (state, action) => {
+      const newUser = action.payload;
+      const exists = state.chatedUsers.some(chat => chat.userId === newUser._id);
+      if (!exists) {
+    state.chatedUsers.push({ userId: newUser._id });
+      }
+}
+
     },
     extraReducers : (builder)=>{
         builder
@@ -111,5 +123,5 @@ const chatSlice= createSlice({
 })
 
 
-export const { setallUsers, setChatwithUser } = chatSlice.actions;
+export const { setallUsers, setChatwithUser, setChoosingNew, setChatedUsers } = chatSlice.actions;
 export default chatSlice.reducer;

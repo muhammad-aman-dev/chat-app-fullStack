@@ -307,3 +307,33 @@ export const changePass = async (req, res)=>{
  await user.save();  
  return res.status(200).send('Password Changed Successfully.')
 } 
+
+
+export const searchUser= async (req, res)=>{
+  try{
+    const { input } = req.body;
+   if (!input || input.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Search input is required",
+      });
+    }
+
+    const regex = new RegExp(`^${input}`, "i");
+
+    const users = await User.find({ email: { $regex: regex } })
+      .select("fullName email avatar.url") 
+      .limit(10); 
+
+    return res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (err) {
+    console.error("Search Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

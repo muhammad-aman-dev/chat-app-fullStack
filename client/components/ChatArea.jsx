@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Loader2, MessageSquareText, Plus, SendIcon } from "lucide-react";
 import { useState } from "react";
-import { setsendMessage } from "../store/slices/chatslice";
+import { setsendMessage, setChatedUsers } from "../store/slices/chatslice";
 
 const ChatArea = () => {
-  const { isLoadingChat, selectedChat, chatWithUser } = useSelector((state) => state.chat);
+  const { isLoadingChat, selectedChat, chatWithUser, chatedUsers} = useSelector((state) => state.chat);
   const { onlineUsers, authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [inputText, setinputText] = useState('');
@@ -15,6 +15,10 @@ const ChatArea = () => {
       data : {
         text : inputText
       }
+    }
+    const exists = chatedUsers.some(chat => chat.userId === selectedChat._id);
+    if (!exists) {
+    dispatch(setChatedUsers(selectedChat));
     }
     console.log(data);
      dispatch(setsendMessage(data));
@@ -45,7 +49,7 @@ const ChatArea = () => {
       )}
 
       {chatWithUser && (
-        <div className="flex flex-col w-full min-h-[83%] max-h-[83%] gap-2">
+        <div className="flex flex-col w-full min-h-[83%] max-h-[83%] gap-2 pb-2">
           <div className="chatHead rounded-md h-[80px] p-2 flex justify-between items-center sm:px-7 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
             <div className="flex items-center gap-5">
               <img
@@ -65,7 +69,8 @@ const ChatArea = () => {
             </div>
           </div>
 
-          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%)] min-h-[calc(100%-110px)] overflow-auto bg-gray-50">
+          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%)] min-h-[calc(100%-130px)] bg-gray-50">
+          <div className="overflow-y-auto flex flex-col gap-2 w-full">
           {chatWithUser.map((message,index)=>{
             const isSender = message.sender === authUser._id;
             return (
@@ -97,8 +102,9 @@ const ChatArea = () => {
         )
           })}
           </div>
+          </div>
 
-          <div className="input h-[50px] bg-white border-t rounded-2xl border-gray-200 flex items-center gap-3 justify-between px-2 py-3 sm:px-4">
+          <div className="input min-h-[50px] bg-white border-t rounded-2xl border-gray-200 flex items-center gap-3 justify-between px-2 py-3 sm:px-4">
            <Plus
           color="#000000"
           size={22}
