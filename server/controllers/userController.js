@@ -109,7 +109,7 @@ export const getUser = async(req, res)=>{
 
 export const updateProfile = async(req, res)=>{
     const { fullName }= req.body;
-    if(fullName.trim().length === 0){
+    if(fullName && fullName.trim().length === 0){
      return res.status(400).json({
         success:false,
         message:"Edited Details are Invalid..."
@@ -141,20 +141,25 @@ export const updateProfile = async(req, res)=>{
         });
         }
     }
-    let data ={
+    let data;
+    if(fullName){
+    data ={
         fullName,
     }
+  }
     let user=await User.findOne({_id:req.user._id});
     if(avatar && cloudinaryResponse?.public_id && cloudinaryResponse?.secure_url){
         user.avatar.id= cloudinaryResponse.public_id;
         user.avatar.url= cloudinaryResponse.secure_url;
     }
+    if(fullName){
     user.fullName=data?.fullName;
+    }
     await user.save();
 
     return res.status(200).json({
         success:true,
-        message:"User Updated Successfully....",
+        message:"User Updated Successfully. Please Reload Page...",
         url:cloudinaryResponse.secure_url || "",
     })
 

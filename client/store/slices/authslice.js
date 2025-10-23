@@ -61,11 +61,15 @@ const authSlice = createSlice({
         isUpdatingProfile : false ,
         isCheckingAuth : false ,
         onlineUsers : [],
+        isUpdatingProfile : false,
     },
     reducers : {
         setOnlineUsers(state, action){
             state.onlineUsers = action.payload;
             console.log(state.onlineUsers)
+        },
+        setIsUpdatingProfile(state, action){
+            state.isUpdatingProfile = action.payload;
         }
     },
     extraReducers : (builder)=>{
@@ -113,6 +117,6 @@ const authSlice = createSlice({
 });
 
 
-export const {setOnlineUsers} = authSlice.actions;
+export const {setOnlineUsers , setIsUpdatingProfile} = authSlice.actions;
 
 export default authSlice.reducer; 

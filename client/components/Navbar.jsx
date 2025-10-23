@@ -1,9 +1,10 @@
 import { MessageSquareText, UserRound } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logOut } from '../store/slices/authslice';
+import { setIsUpdatingProfile } from '../store/slices/authslice';
 
 const Navbar = () => {
-  const { authUser, isCheckingAuth } = useSelector((state) => state.auth);
+  const { authUser, isCheckingAuth , isUpdatingProfile} = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   return (
@@ -22,7 +23,10 @@ const Navbar = () => {
             <span className='text-lg hidden sm:inline-block font-bold bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent ml-1'>{authUser.fullName}</span>
             <span className='text-xs hidden sm:inline-block font-bold bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent ml-1'>{authUser.email}</span>
             </div>
+            <div onClick={()=>{dispatch(setIsUpdatingProfile(!isUpdatingProfile))}} className='flex cursor-pointer flex-col gap-1 items-center justify-center'>
           <UserRound color='#5856d6' strokeWidth={'2.25px'} className='hover:scale-105 duration-300 cursor-pointer'/>
+           <span className='bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent text-xs'>Update Profile</span>
+          </div>
         </div>
           <button
             onClick={() => dispatch(logOut())}
