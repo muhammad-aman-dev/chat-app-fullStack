@@ -2,12 +2,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { Loader2, MessageSquareText, Plus, SendIcon } from "lucide-react";
 import { useState } from "react";
 import { setsendMessage, setChatedUsers, setLatestMessage } from "../store/slices/chatslice";
+import { setIsUpdatingProfile } from "../store/slices/authslice";
 
 const ChatArea = () => {
   const { isLoadingChat, selectedChat, chatWithUser, chatedUsers} = useSelector((state) => state.chat);
   const { onlineUsers, authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [inputText, setinputText] = useState('');
+
+  function handleisUpdatingProfile(e){
+    e.stopPropagation();
+    dispatch(setIsUpdatingProfile(true));
+  }
 
   function sendMessage(){
     const data={
@@ -34,6 +40,7 @@ const ChatArea = () => {
           <h3 className="text-gray-700 text-lg sm:text-2xl text-center">
             Welcome to WeChat! Please select or start a new chat to enjoy the experience.
           </h3>
+          <span onClick={(e)=>{handleisUpdatingProfile(e)}} className="cursor-pointer border-b-1 border-purple-500 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent">Update Profile</span>
         </div>
       )}
 

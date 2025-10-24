@@ -42,7 +42,7 @@ const NewChatSelect = () => {
       <div className="bg-white flex flex-col items-center w-[80%] relative">
         <img src="/cross.svg" alt="Close" className="absolute right-3 top-3 hover:scale-105 duration-300 cursor-pointer" onClick={()=>{dispatch(setChoosingNew(false))}}/>
         <h3 className="text-lg text-center p-3 font-bold">Search User</h3>
-        <input type="text" value={searchInput} onChange={(e)=>{setsearchInput(e.target.value)}} className="border-1 sm:w-[80%] rounded-2xl p-1 w-full border-gray-700" placeholder="Search with Email"/>
+        <input type="text" value={searchInput} onChange={(e)=>{setsearchInput(e.target.value)}} className="border-1 w-[90%] sm:w-[80%] rounded-2xl p-1 border-gray-700" placeholder="Search with Email"/>
         <div className="Users flex flex-col gap-2 max-h-[300px] min-h-[300px] w-full sm:w-[80%]">
            <h4 className="font-bold mt-3 text-center">Users</h4>
             {isLoading && <div className="w-max flex flex-col"><div className="animate-spin border-r-4 border-l-4 rounded-full text-blue-600 w-10 h-10"></div></div>}

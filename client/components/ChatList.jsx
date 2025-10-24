@@ -17,7 +17,6 @@ const ChatList = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Fetch all users and chat users when component mounts
     dispatch(getAllUsers());
     if (authUser?._id) {
       dispatch(getChatedusers(authUser._id));

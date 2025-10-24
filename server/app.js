@@ -11,9 +11,6 @@ const app = express();
 
 dotenv.config();
 
-
-
-
 dbConnection();
 
 app.use(
@@ -29,11 +26,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 app.use(
-    fileUpload({
-        useTempFiles:true,
-        tempFileDir: "./temp/"
-    })
-)
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "./temp/",
+    parseNested: true,     
+    preserveExtension: true,  
+  })
+);
 
 app.get("/",async (req,res)=>{
     return res.send("Hello")
