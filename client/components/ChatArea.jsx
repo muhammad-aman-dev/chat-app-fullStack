@@ -1,19 +1,25 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Loader2, MessageSquareText, Plus, SendIcon } from "lucide-react";
-import { useState } from "react";
-import { setsendMessage, setChatedUsers, setLatestMessage } from "../store/slices/chatslice";
+import { useState , useRef , useEffect} from "react";
+import { setsendMessage, setLatestMessage , setselectedChat } from "../store/slices/chatslice";
 import { setIsUpdatingProfile } from "../store/slices/authslice";
+import { X } from 'lucide-react';
 
 const ChatArea = () => {
-  const { isLoadingChat, selectedChat, chatWithUser, chatedUsers} = useSelector((state) => state.chat);
+  const { isLoadingChat, selectedChat, chatWithUser} = useSelector((state) => state.chat);
   const { onlineUsers, authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [inputText, setinputText] = useState('');
+  const [photoSelected, setphotoSelected] = useState(null);
+  const [photoPreview, setphotoPreview] = useState()
 
   function handleisUpdatingProfile(e){
     e.stopPropagation();
     dispatch(setIsUpdatingProfile(true));
   }
+
+  const bottomRef = useRef(null)
+  const photoRef = useRef(null)
 
   function sendMessage(){
     const data={
@@ -26,6 +32,23 @@ const ChatArea = () => {
      dispatch(setsendMessage(data));
      setinputText('');
   }
+
+//      document.addEventListener('keydown',(event)=>{
+//       if(event.key == 'Enter' && (inputText.length>0 || photoSelected!=null)){
+//         console.log('Enter')
+//         sendMessage();
+//       }
+// })
+
+   function handleBack(){
+    dispatch(setselectedChat(null));
+   }
+
+   useEffect(() => {
+     bottomRef.current?.scrollIntoView() 
+   }, [chatWithUser])
+   
+
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -51,28 +74,31 @@ const ChatArea = () => {
         </div>
       )}
 
-      {chatWithUser && (
+      {(chatWithUser && selectedChat) && (
         <div className="flex flex-col w-full min-h-[83%] max-h-[83%] gap-2 pb-2">
           <div className="chatHead rounded-md h-[80px] p-2 flex justify-between items-center sm:px-7 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
             <div className="flex items-center gap-5">
+              <div className="flex gap-1 items-center">
+                <img src="/back.svg" alt="back" className={`block sm:hidden`} onClick={handleBack} />
               <img
                 className="rounded-full w-14 h-14 object-cover"
                 src={selectedChat?.avatar?.url || "/defaultDp.png"}
                 alt=""
               />
+              </div>
               <div className="flex flex-col gap-2">
               <h5 className="text-white font-bold">{selectedChat?.fullName}</h5>
               <h5 className="text-white text-xs">{selectedChat?.email}</h5>
               </div>
             </div>
             <div className="isonline">
-              <p className="text-white font-bold text-lg sm:text-xl">
+              <p className="text-white font-bold text-xs sm:text-xl">
                 {onlineUsers.includes(selectedChat?._id) ? "🟢 Online" : "🔴 Offline"}
               </p>
             </div>
           </div>
 
-          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%-50px)] min-h-[calc(100%-25px)] bg-gray-50">
+          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%-50px)] sm:min-h-[calc(100%)] bg-gray-50">
           <div className="overflow-y-auto flex flex-col gap-2 w-full">
           {chatWithUser.map((message,index)=>{
             const isSender = message.sender === authUser._id;
@@ -95,7 +121,7 @@ const ChatArea = () => {
                 className="rounded-lg max-w-xs"
               />
             ) : (
-              <p className="text-sm sm:text-base">{message.text}</p>
+              <p className="text-sm sm:text-base">{message?.text}</p>
             )}
             <p className={`text-[10px] mt-1 opacity-70 ${isSender ? "text-right" : "text-left"}`}>
               {new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -104,12 +130,39 @@ const ChatArea = () => {
         </div>
         )
           })}
+          <div ref={bottomRef}></div>
           </div>
           </div>
 
-          <div className="input min-h-[50px] bg-white border-t rounded-2xl border-gray-200 flex items-center gap-3 justify-between px-2 py-3 sm:px-4">
+          <div className="input min-h-[50px] bg-white border-t rounded-2xl border-gray-200 flex items-center gap-3 justify-between px-2 py-3 sm:px-4 relative">
+           <div className={`photoforsend ${photoPreview?'block':'hidden'}  absolute min-w-52 overflow-hidden min-h-52 max-w-52 max-h-52 bg-gray-200 -top-44 sm:-top-66 px-3 pt-2 pr-5 left-0 sm:min-w-66 sm:min-h-66 sm:max-w-66 sm:max-h-66`}>
+            <img src={photoPreview?photoPreview:'/defaultDp.png'} className="w-full h-full border-1  object-fill  max-w-46 max-h-46  sm:max-w-62 sm:max-h-62 border-black" alt="User DP" />
+            <div className=" bg-black border-1 absolute top-0 z-100 right-2 rounded-md">
+            <img src="cross.svg" alt="cancel" className=" hover:scale-110 duration-300 cursor-pointer invert-100 " onClick={(e)=>{setphotoPreview(null)}}/>
+           </div>
+           </div>
+           <input
+          ref={photoRef}
+          type="file"
+          name="file"
+          id="file"
+          className="hidden"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith("image/")) {
+              setphotoSelected(file);
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setphotoPreview(reader.result); 
+              };
+              reader.readAsDataURL(file);
+            }
+          }}
+        />
            <Plus
           color="#000000"
+          onClick={(e)=>{e.stopPropagation(); photoRef.current.click()}}
           size={22}
           className="hover:scale-110 transition-transform duration-200 cursor-pointer"
         />
@@ -119,7 +172,7 @@ const ChatArea = () => {
           color="#000000"
           size={22}
           onClick={sendMessage}
-          className={`hover:scale-110 transition-transform duration-200 cursor-pointer ${inputText.length>0?'block':'hidden'}`}
+          className={`hover:scale-110 transition-transform duration-200 cursor-pointer ${inputText.length>0 || photoSelected!=null ?'block':'hidden'}`}
         />
           </div>
         </div>

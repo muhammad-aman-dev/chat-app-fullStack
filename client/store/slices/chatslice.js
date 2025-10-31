@@ -96,6 +96,9 @@ const chatSlice = createSlice({
     },
     setLatestMessage(state, action){
       state.latestMessage = action.payload;
+    },
+    setselectedChat(state, action){
+      state.selectedChat = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -154,5 +157,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setChatwithUser, setChoosingNew, setChatedUsers, setLatestMessage } = chatSlice.actions;
+export const { setChatwithUser, setChoosingNew, setselectedChat, setChatedUsers, setLatestMessage } = chatSlice.actions;
 export default chatSlice.reducer;

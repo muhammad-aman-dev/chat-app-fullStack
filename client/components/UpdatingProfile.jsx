@@ -26,7 +26,6 @@ const UpdatingProfile = () => {
     if(authUser.avatar.url && authUser.avatar.url!=''){
         setavatar(authUser.avatar.url)
     }
-    
   }, [])
   
   async function handleUpdate(){
@@ -58,6 +57,7 @@ const UpdatingProfile = () => {
   setisUpdating(false);
 }
 
+
     return (
     <div className="w-full min-h-full gap-3 bg-white flex flex-col items-center justify-center relative">
       <div onClick={()=>{dispatch(setIsUpdatingProfile(false))}} className="cursor-pointer back absolute top-4 left-4 text-lg bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 bg-clip-text text-transparent">{'<Back To Chats'}</div>
@@ -81,7 +81,7 @@ const UpdatingProfile = () => {
             }
           }}
         />
-      <img src={updatedDpPreReview || avatar || "/defaultDp.png"} className="rounded-full w-[200px] sm:w-[300px] border-1 border-gray-700" alt="User DP" />
+      <img src={updatedDpPreReview || avatar || "/defaultDp.png"} className="rounded-full w-[200px] h-[200px] sm:h-[300px] sm:w-[300px] border-1 border-gray-700" alt="User DP" />
       <img src="/edit.svg" alt="edit svg" onClick={()=>{fileRef.current.click()}} className="border-1 rounded-full w-8 p-1 border-black cursor-pointer bg-white absolute bottom-1 left-[44%]"/>
     </div>
     <input type="text" value={updatedFullName} onChange={(e)=>{setupdatedFullName(e.target.value)}} className="fullName text-gray-700 outline-1 rounded-2xl p-4" />

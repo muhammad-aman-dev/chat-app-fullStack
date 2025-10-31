@@ -24,7 +24,6 @@ function App() {
     dispatch(getAllUsers());
   }, [dispatch]);
 
-  // ✅ Handle socket connections
   useEffect(() => {
     if (!authUser) return;
 
@@ -90,10 +89,6 @@ function App() {
   }
 }, [latestMessage]);
 
-  
-
-
-  // ✅ Loader while checking auth
   if (isCheckingAuth && !authUser) {
     return (
       <div className="flex flex-col items-center justify-center h-[100vh] bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -102,6 +97,7 @@ function App() {
       </div>
     );
   }
+
 
   return (
     <>

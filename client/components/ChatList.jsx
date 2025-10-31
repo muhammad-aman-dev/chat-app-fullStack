@@ -28,7 +28,7 @@ const ChatList = () => {
   };
 
   return (
-    <div className="w-full sm:w-[30%] flex flex-col text-blue-600 bg-white border-r border-gray-200 shadow-sm">
+    <div className="w-full h-full flex flex-col text-blue-600 bg-white border-r border-gray-200 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500">
         <div className="flex items-center gap-2">
