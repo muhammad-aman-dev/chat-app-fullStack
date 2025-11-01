@@ -124,7 +124,7 @@ const ChatArea = () => {
             </div>
           </div>
 
-          <div className="chat-section justify-end flex flex-col gap-2 w-full max-h-[calc(100%-50px)] sm:min-h-[calc(100%)] bg-gray-50">
+          <div className="chat-section justify-end flex flex-col gap-2 w-full min-h-[calc(100%-30px)] max-h-[calc(100%-50px)] sm:min-h-[calc(100%)] bg-gray-50">
             <div className="overflow-y-auto flex flex-col gap-2 w-full">
               {chatWithUser.map((message, index) => {
                 const isSender = message.sender === authUser._id;
