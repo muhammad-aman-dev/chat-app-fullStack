@@ -21,7 +21,9 @@ function App() {
   // ✅ Fetch logged-in user and all users
   useEffect(() => {
     dispatch(getUser());
+    if(authUser!=null){
     dispatch(getAllUsers());
+    }
   }, [dispatch]);
 
   useEffect(() => {
