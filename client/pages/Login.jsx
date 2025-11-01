@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import { toast } from "react-toastify";
 import { axiosInstance } from "../lib/axios";
 import { login } from "../store/slices/authslice";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 const Login = () => {
    const [togglePass, settogglePass] = useState('password');
@@ -19,6 +19,8 @@ const Login = () => {
    const [email, setemail] = useState('');
    const [password, setpassword] = useState('');
 
+  const { isLoggingIn } = useSelector((state)=> state.auth);
+   
   const dispatch=useDispatch();
 
    function handleBack() {
@@ -133,7 +135,7 @@ const Login = () => {
             <input type={togglePass} onChange={(e)=>{setpassword(e.target.value)}} value={password} placeholder="Enter Your Password" className="w-full font-bold outline-1 outline-blue-400 text-blue-600 focus:shadow-md p-3 rounded-2xl shadow-blue-300"/>
             <img className="absolute right-4 top-3 cursor-pointer" onClick={handleTogglePass} src={togglePass==='password'?'/eye.svg':'/eyeclosed.svg'} alt="Show Password" />
           </div>
-          <button onClick={handleLogin} className="w-3/4 sm:w-1/4 px-5 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg hover:shadow-indigo-400/50 transition-all cursor-pointer hover:scale-105 duration-300">Login</button>
+          <button disabled={isLoggingIn} onClick={handleLogin} className="w-3/4 sm:w-1/4 px-5 py-2 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-lg hover:shadow-indigo-400/50 transition-all cursor-pointer hover:scale-105 duration-300">{isLoggingIn?'Logging In...':'Login'}</button>
           <div className="text-blue-600 flex flex-col items-center sm:flex-row sm:justify-between w-full">
             <button onClick={()=>{setforgotPass(true)}} className="cursor-pointer underline">Forgot Password?</button>
             <div><span>Not Registered?</span><Link to={'/signup'} className="underline ml-1">Sign Up Now</Link></div>
