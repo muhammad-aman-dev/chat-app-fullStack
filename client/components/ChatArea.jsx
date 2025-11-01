@@ -26,6 +26,7 @@ const ChatArea = () => {
 
   const bottomRef = useRef(null);
   const photoRef = useRef(null);
+  const inputContainerRef = useRef(null);
 
   function sendMessage() {
     let data = new FormData();
@@ -172,84 +173,95 @@ const ChatArea = () => {
             </div>
           </div>
 
-          <div className="input min-h-[50px] bg-white border-t rounded-2xl border-gray-200 flex items-center gap-3 justify-between px-2 py-3 sm:px-4 relative">
-            <div
-              className={`photoforsend ${
-                photoPreview ? "block" : "hidden"
-              }  absolute min-w-52 overflow-hidden min-h-52 max-w-52 max-h-52 bg-gray-200 -top-44 sm:-top-66 px-3 pt-2 pr-5 left-0 sm:min-w-66 sm:min-h-66 sm:max-w-66 sm:max-h-66`}
-            >
-              <img
-                src={photoPreview ? photoPreview : "/defaultDp.png"}
-                className="w-full h-full border-1  object-fill  max-w-46 max-h-46  sm:max-w-62 sm:max-h-62 border-black"
-                alt="User DP"
-              />
-              <div className=" bg-black border-1 absolute top-0 z-100 right-2 rounded-md">
-                <img
-                  src="cross.svg"
-                  alt="cancel"
-                  className=" hover:scale-110 duration-300 cursor-pointer invert-100 "
-                  onClick={(e) => {
-                    setphotoPreview(null);
-                  }}
-                />
-              </div>
-            </div>
-            <input
-              ref={photoRef}
-              type="file"
-              name="file"
-              id="file"
-              className="hidden"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith("image/")) {
-                  setphotoSelected(file);
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setphotoPreview(reader.result);
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-            <Plus
-              color="#000000"
-              onClick={(e) => {
-                e.stopPropagation();
-                photoRef.current.click();
-              }}
-              size={22}
-              className="hover:scale-110 transition-transform duration-200 cursor-pointer"
-            />
-            <input
-              className="w-full border-1 p-1 rounded-2xl border-gray-200"
-              placeholder="Type Your Message"
-              type="text"
-              value={inputText}
-              onChange={(e) => {
-                setinputText(e.target.value);
-              }}
-            />
-            <img
-              src="/cross.svg"
-              alt="clear input"
-              onClick={() => {
-                setinputText("");
-              }}
-              className={inputText.length > 0 ? "block" : "invisible"}
-            />
-            <SendIcon
-              color="#000000"
-              size={22}
-              onClick={sendMessage}
-              className={`hover:scale-110 transition-transform duration-200 cursor-pointer ${
-                inputText.length > 0 || photoSelected != null
-                  ? "block"
-                  : "hidden"
-              }`}
-            />
-          </div>
+          <div
+  ref={inputContainerRef}
+  className="input min-h-[50px] bg-white border-t rounded-2xl border-gray-200 flex items-center gap-3 justify-between px-2 py-3 sm:px-4 relative"
+>
+  <div
+    className={`photoforsend ${
+      photoPreview ? "block" : "hidden"
+    }  absolute min-w-52 overflow-hidden min-h-52 max-w-52 max-h-52 bg-gray-200 -top-44 sm:-top-66 px-3 pt-2 pr-5 left-0 sm:min-w-66 sm:min-h-66 sm:max-w-66 sm:max-h-66`}
+  >
+    <img
+      src={photoPreview ? photoPreview : "/defaultDp.png"}
+      className="w-full h-full border-1 object-fill max-w-46 max-h-46 sm:max-w-62 sm:max-h-62 border-black"
+      alt="User DP"
+    />
+    <div className=" bg-black border-1 absolute top-0 z-100 right-2 rounded-md">
+      <img
+        src="cross.svg"
+        alt="cancel"
+        className=" hover:scale-110 duration-300 cursor-pointer invert-100 "
+        onClick={() => {
+          setphotoPreview(null);
+        }}
+      />
+    </div>
+  </div>
+
+  <input
+    ref={photoRef}
+    type="file"
+    name="file"
+    id="file"
+    className="hidden"
+    accept="image/*"
+    onChange={(e) => {
+      const file = e.target.files[0];
+      if (file && file.type.startsWith("image/")) {
+        setphotoSelected(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setphotoPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }}
+  />
+
+  <Plus
+    color="#000000"
+    onClick={(e) => {
+      e.stopPropagation();
+      photoRef.current.click();
+    }}
+    size={22}
+    className="hover:scale-110 transition-transform duration-200 cursor-pointer"
+  />
+
+  <input
+    className="w-full border-1 p-1 rounded-2xl border-gray-200"
+    placeholder="Type Your Message"
+    type="text"
+    value={inputText}
+    onChange={(e) => setinputText(e.target.value)}
+    onFocus={() => {
+      // Scroll the entire input bar into view when keyboard opens
+      setTimeout(() => {
+        inputContainerRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 300);
+    }}
+  />
+
+  <img
+    src="/cross.svg"
+    alt="clear input"
+    onClick={() => setinputText("")}
+    className={inputText.length > 0 ? "block" : "invisible"}
+  />
+
+  <SendIcon
+    color="#000000"
+    size={22}
+    onClick={sendMessage}
+    className={`hover:scale-110 transition-transform duration-200 cursor-pointer ${
+      inputText.length > 0 || photoSelected != null ? "block" : "hidden"
+    }`}
+  />
+</div>
         </div>
       )}
     </div>
