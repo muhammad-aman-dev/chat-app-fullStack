@@ -203,7 +203,7 @@ const ChatArea = () => {
             <div
               className={`photoforsend ${
                 photoPreview ? "block" : "hidden"
-              } absolute min-w-52 overflow-hidden min-h-52 max-w-52 max-h-52 bg-gray-200 -top-44 sm:-top-66 px-3 pt-2 pr-5 left-0 sm:min-w-66 sm:min-h-66 sm:max-w-66 sm:max-h-66`}
+              } absolute min-w-52 overflow-hidden min-h-52 max-w-52 max-h-52 bg-gray-200 -top-54 sm:-top-66 px-3 pt-2 pr-5 left-0 sm:min-w-66 sm:min-h-66 sm:max-w-66 sm:max-h-66`}
             >
               <img
                 src={photoPreview ? photoPreview : "/defaultDp.png"}
