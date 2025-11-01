@@ -45,7 +45,10 @@ export const setSelectedUser = createAsyncThunk("message/:id", async (user, thun
 export const setsendMessage = createAsyncThunk("message/send/:id", async (message, thunkAPI) => {
   try {
     const { id, data } = message;
-    const response = await axiosInstance.post(`message/send/${id}`, data);
+    const response = await axiosInstance.post(`message/send/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error(error);
@@ -53,6 +56,7 @@ export const setsendMessage = createAsyncThunk("message/send/:id", async (messag
     return thunkAPI.rejectWithValue(error.response?.data || "Failed to send message");
   }
 });
+
 
 const chatSlice = createSlice({
   name: "chat",
