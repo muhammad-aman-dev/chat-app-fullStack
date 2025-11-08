@@ -51,7 +51,7 @@ Messages are delivered in realtime using **Socket.IO**, and media files are stor
 - **Dev Tools:** npm
 
 
-## Repository Structure (Typical)
+## Repository Structure
 
 - Adjust to reflect your repo’s actual layout:
 
