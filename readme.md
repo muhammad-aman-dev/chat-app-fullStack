@@ -43,7 +43,7 @@ Messages are delivered in realtime using **Socket.IO**, and media files are stor
 
 ## Technologies
 
-- **Frontend:** React.js, TailwindCSS  
+- **Frontend:** React.js, TailwindCSS, Redux
 - **Backend:** Node.js, Express.js  
 - **Realtime:** Socket.IO  
 - **Database:** MongoDB (Atlas or self-hosted)  
