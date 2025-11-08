@@ -65,3 +65,19 @@ Messages are delivered in realtime using **Socket.IO**, and media files are stor
 - /server — Express backend controllers/ models/ routes/ middlewares/ sockets/ utils/
 
 - .env should be included separately in both folders
+
+### Prerequisites
+
+- Node.js (LTS recommended)  
+- npm or yarn  
+- MongoDB (Atlas or local)  
+- Cloudinary account (for media upload)  
+- Optional: ngrok (for testing socket events across devices during local dev)
+
+
+### Environment Variables (.env Examples)
+
+#### Client ('client/.env)
+
+
+#### Server (`server/.env`)
