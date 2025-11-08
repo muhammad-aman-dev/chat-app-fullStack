@@ -14,12 +14,6 @@ Live demo: [https://wechatpro.vercel.app](https://wechatpro.vercel.app)
   - [Prerequisites](#prerequisites)  
   - [Environment Variables (.env examples)](#environment-variables-env-examples)  
   - [Install and Run (Server & Client)](#install-and-run-server--client)  
-- [Running in Production / Deployment Notes](#running-in-production--deployment-notes)  
-- [API Endpoints (High Level)](#api-endpoints-high-level)  
-- [Socket / Realtime Notes](#socket--realtime-notes)  
-- [Media Uploads (Cloudinary)](#media-uploads-cloudinary)  
-- [Security & Production Considerations](#security--production-considerations)  
-- [Contributing](#contributing)  
 - [License & Credits](#license--credits)
 
 
@@ -125,8 +119,17 @@ npm run dev   # or node index.js / npm start
 # Client
 cd client
 npm start     # or npm run dev if using Vite
-
 ```
+
+## License & Credits
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.  
+
+Built with ❤️ using React, Node, Express, MongoDB, Socket.IO, Tailwind CSS, and Cloudinary.
+
+**Contact:**  
+- Repository owner: muhammad-aman-dev  
+- Live demo: https://wechatpro.vercel.app
 
 
 
