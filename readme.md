@@ -104,6 +104,7 @@ EMAIL_PASS=yourpass
 
 1. Install dependencies:
 
+```bash
 # Server
 cd server
 npm install
@@ -112,8 +113,11 @@ npm install
 cd client
 npm install
 
+```
+
 2. Run server and client:
 
+```
 # Server
 cd server
 npm run dev   # or node index.js / npm start
@@ -122,10 +126,7 @@ npm run dev   # or node index.js / npm start
 cd client
 npm start     # or npm run dev if using Vite
 
-Optional: run both concurrently from root (if configured):
-npm run dev
-
-Ports: Frontend usually runs on 3000, backend on 5000.
+```
 
 
 
