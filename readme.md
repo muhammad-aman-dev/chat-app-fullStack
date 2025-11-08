@@ -77,7 +77,11 @@ Messages are delivered in realtime using **Socket.IO**, and media files are stor
 
 ### Environment Variables (.env Examples)
 
-#### Client ('client/.env)
+#### Client ('client/.env')
+
+```bash
+VITE_BACKEND_URL=http://localhost:yourport
+
 
 
 #### Server (`server/.env`)
