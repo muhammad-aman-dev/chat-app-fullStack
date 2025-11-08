@@ -164,7 +164,7 @@ const ChatArea = () => {
                           <img
                             src={message.media}
                             alt="media"
-                            className="rounded-lg max-w-[350px] min-w-full max-h-[300px] object-contain"
+                            className="rounded-lg max-w-[150px] min-w-[150px] sm:max-w-[350px] sm:min-w-full sm:max-h-[300px] object-contain"
                           />
                           {message.text && (
                             <p className="text-sm sm:text-base max-w-[250px] sm:max-w-[350px]">
