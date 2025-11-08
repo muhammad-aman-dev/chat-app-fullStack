@@ -30,7 +30,8 @@ This project is a realtime chat web application (web client + server). Users can
 - Create accounts and sign in  
 - Send direct messages in realtime  
 - Exchange media
-- Update profile picture or full name 
+- Update profile picture or full name
+- Users can also use forgot password functionality if they use their actual emails
 
 Messages are delivered in realtime using **Socket.IO**, and media files are stored via **Cloudinary**.
 
@@ -81,7 +82,20 @@ Messages are delivered in realtime using **Socket.IO**, and media files are stor
 
 ```bash
 VITE_BACKEND_URL=http://localhost:yourport
-
-
+```
 
 #### Server (`server/.env`)
+```
+MONGO_URI=mongodb://localhost:27017
+PORT=4000
+CLOUDINARY_CLOUD_NAME=yourcloudname
+CLOUDIBNARY_API_KEY=yourcloudinaryapi
+CLOUDINARY_API_SECRET=yourcloudinarysecret
+JWT_SECRET=yourjwtsecret
+JWT_EXPIRE=7d
+COOKIE_EXPIRE=7
+FRONTEND_URL=http://localhost:yourport
+CURR_STATUS=development
+EMAIL=youremail
+EMAIL_PASS=yourpass
+```
