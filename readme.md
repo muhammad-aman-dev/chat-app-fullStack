@@ -58,10 +58,10 @@ Messages are delivered in realtime using **Socket.IO**, and media files are stor
 
 ## Repository Structure (Typical)
 
--Adjust to reflect your repo’s actual layout:
+- Adjust to reflect your repo’s actual layout:
 
--/client — React frontend public/ src/ components/ pages/ services/
+- /client — React frontend public/ src/ components/ pages/ services/
 
--/server — Express backend controllers/ models/ routes/ middlewares/ sockets/ utils/
+- /server — Express backend controllers/ models/ routes/ middlewares/ sockets/ utils/
 
--.env should be included separately in both folders
+- .env should be included separately in both folders
