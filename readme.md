@@ -123,7 +123,7 @@ npm start     # or npm run dev if using Vite
 
 ## License & Credits
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.  
+This project is licensed under the MIT License .
 
 Built with ❤️ using React, Node, Express, MongoDB, Socket.IO, Tailwind CSS, and Cloudinary.
 
