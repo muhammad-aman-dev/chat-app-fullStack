@@ -2,7 +2,6 @@ import { createAsyncThunk ,createSlice } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../lib/axios.js";
 import { connectSocket, disConnectSocket } from "../../lib/socket.js";
 import { toast } from "react-toastify";
-import { data } from "react-router-dom";
 
 export const getUser = createAsyncThunk("user/me", async(_, thunkAPI) => {
     try {
